@@ -1,299 +1,684 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Image to DataURL Encoder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: "Lexend", "Helvetica Neue", "Helvetica", sans-serif;
+        :root {
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --accent: #3b82f6;
+            --text: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border: #374151;
+            --input-bg: #111827;
+            --success: #10b981;
+            --button-hover: #2563eb;
+        }
+
+        * { 
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-size: 16px;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            background-color:#000;
-            height: 100vh;
-        }
-        legend { text-transform: uppercase; font-size:1.2rem; }
-        header {
-            background-color: #999;
-            color: #eee;
-            height: 0vh;
         }
 
-        main {
-            background-color: #000;
-            color: #ddd;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: center;
-        }
-
-        footer {
-            background-color: #666;
-            color: #eee;
-            height: 0vh;
-        }
-
-        li {
-            display: flex;
-            flex-direction: row;
-            white-space: nowrap;
-        }
-        input,textarea,select {
-            background-color: #222;
-            color: #eee;
-        }
-        input {
-            border: 1px inset #000;
-            font-size: 18px;
-            font-weight: 300;
-            padding: 4px;
-        }
-        label {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-        }
-        #imgsrc {
-            width: 25rem;
-        }
-        button {
-            background-color:#6664;
-            border: 1px solid #ccc;
-            color:#fff;
-            border-radius: 1rem;
-            height: 2rem;
-            margin-left: 1rem;
-        }
-        button:hover {
-            background-color: #666a;
-        }
-        .results, .preview {
-            align-items: flex-start;
-        }
-        fieldset {
-            background-color: #333;
-        }
-        @media screen and (maxwidth:640px) {
-            
-        }
-        .preview {
-            min-height:7rem;
-        }
-        .preview-wrap {
-            width:90%;
-            border: 1px solid #eee6;
-            min-height: 7rem;
-        }
-        label > span {
-            display: inline-block;
-            width: 6rem;
-            text-align: right;
-            padding-right: 1rem;
-        }
-        .copylink {
-            margin-left: 1rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            border: 1px solid #eee0;
-            transition: all 200ms linear;
-            position: relative;
-            top: 0px;
-        }
-        .copylink:hover {
-            border: 1px solid #eee;
-        }
-        .copyLink:active {
-            position: relative;
-            top: 4px;
-            border: 1px solid #f00;
-        }
-        main {
-            max-width: 600px;
-        }
-        h1 {
-            margin-bottom: 0rem;
-            height: 5rem;
-            width: 600px;
-            overflow: hidden;
-            border-bottom: 2px solid #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center; 
-        }
-        details {
-            font-family: "Lexend", "Helvetica Neue", sans-serif;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-            line-height: 1.5;
-            border-bottom: 2px solid #fff;
-            padding-bottom: 1rem;
-            padding-left: 0px;
-            padding-top: 1rem;
-            user-select: none;
-        }
-        details p { 
-            padding-left: 2rem;
-        }
-        .detailWrap {
-            display: inline-block;
-            transition: all 200ms linear;
-            overflow: hidden;
+        .container {
             width: 100%;
-            height: 3.7rem;
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .detailWrap:has(details[open]) {
-            height: 12rem;
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            gap: 15px;
+        }
+
+        .logo {
+            filter: invert(1);
+            height: 40px;
+            width: auto;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .info {
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .input-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: var(--input-bg);
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .file-input-label:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        input[type="file"] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            color: var(--text-secondary);
+        }
+
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .or-divider::before {
+            margin-right: 10px;
+        }
+
+        .or-divider::after {
+            margin-left: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--button-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .output-group {
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: var(--input-bg);
+            color: var(--text);
+            font-family: monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .preview-container {
+            width: 100%;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: var(--input-bg);
+            position: relative;
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+
+        .size-info {
+            margin-top: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .drag-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            transition: opacity 0.3s;
+        }
+
+        .drag-area.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .drag-area i {
+            font-size: 2.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .drag-area p {
+            color: var(--text-secondary);
+        }
+
+        .preview-container.drag-over {
+            border-color: var(--accent);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .success-copy {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(calc(100% + 20px));
+            transition: transform 0.3s ease-out;
+        }
+
+        .success-copy.show {
+            transform: translateX(0);
+        }
+
+        .hide-when-empty {
+            display: none;
+        }
+
+        .paste-instructions {
+            margin-top: 10px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .input-field {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-<main>
-    
-    <h1><img style="filter:invert(1);float:left;height:120px;top:20px;left:20px;position:relative;" width="200" src="https://cdr2.com/crblog/assets/img/img.svg">Image to DataURL Encoder</h1>
-    <div class="detailWrap"><details><summary>INSTRUCTIONS</summary> 
-        <p>Upload or enter URL of image you want to encode and click the 'Encode Image' button. The dataUrl is in the 'Encoded' box and you can see the dataUrl as a rendered image in 'Preview'. Images loaded via URL must be accessible publically accessible and CORS friendly. Images loaded from local files are never transmitted over the network.</p></details>
+    <div class="container">
+        <header class="header">
+            <img class="logo" src="https://cdr2.com/crblog/assets/img/img.svg" alt="Image Encoder Logo">
+            <h1>Image to DataURL Encoder</h1>
+        </header>
+        
+        <div class="card">
+            <div class="info">
+                Convert your images to base64 data URLs. Upload a file, paste an image, enter a URL, or drop an image onto the preview area.
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Image Source</label>
+                <div class="input-field">
+                    <input type="text" id="imageUrl" placeholder="https://example.com/image.jpg" autocomplete="off">
+                    <button id="loadUrlBtn" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Load URL
+                    </button>
+                </div>
+                
+                <div class="or-divider">OR</div>
+                
+                <div class="input-field">
+                    <div class="file-input-wrapper">
+                        <label class="file-input-label">
+                            <i class="fas fa-file-upload"></i> Choose File
+                            <input type="file" id="fileInput" accept="image/*">
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="paste-instructions">
+                    <i class="fas fa-clipboard"></i> You can also paste an image from clipboard (Ctrl+V / ⌘+V) anywhere on this page
+                </div>
+            </div>
+            
+            <div class="preview-container" id="dropArea">
+                <div class="drag-area" id="dragInstructions">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop an image here</p>
+                </div>
+                <img id="preview" class="hide-when-empty">
+            </div>
+            
+            <div class="size-info hide-when-empty" id="sizeInfo">
+                <i class="fas fa-info-circle"></i>
+                <span id="size"></span>
+            </div>
+        </div>
+        
+        <div class="card output-group hide-when-empty" id="outputCard">
+            <label class="input-label">Encoded Data URL</label>
+            <textarea id="results" readonly></textarea>
+            
+            <div class="action-buttons">
+                <button id="copyBtn" class="btn btn-primary">
+                    <i class="fas fa-copy"></i> Copy to Clipboard
+                </button>
+                <button id="downloadBtn" class="btn btn-secondary">
+                    <i class="fas fa-file-download"></i> Download as Text File
+                </button>
+            </div>
+        </div>
     </div>
-    <br><fieldset>
-        <legend>Base64 Encode URL</legend>
-        <label for="imgsrc"><div style="display:inline-block;"><span>URL</span>
-                <input type="text" id="imgsrc" name="imgsrc" placeholder="https://example.com/myimg.jpg"> or <br>
-                <span>Upload File</span> <input id="inputFileToLoad" type="file" onchange="app.encodeImageFileAsURL();" />
-            </div>
-            <button onclick="app.encode();return false;">Encode Image</button>
-        </label><br>
-        <label class="results" for="results">
-            <span>Encoded</span>
-            <textarea id="results" name="results" rows="5" cols="50"></textarea>
-            <span><a class="copylink" href="#" onclick="app.copyLink(); return false;"><svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" fill="#eee" viewBox="0 0 448 512"><path d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg></a>
-            <br><span id="size"></span>
-        </label><br>
-        <label class="preview">
-            <span>Preview</span>
-            <div class="preview-wrap">
-                <img id="preview" src="">
-            </div>
-        </label>
-
-    </fieldset>
-</main>
-<script>
-const $ = str => document.querySelector(str);
-const $$ = str => document.querySelectorAll(str);
-
-(function() {
-    const app = {
-        data: {},
-        state: {
-            loaded: false
-        },
-        init: function() {
-            $("#imgsrc").addEventListener("keydown", function(e) {
-                if (e.keyCode === 13) {
-                    app.encode();
+    
+    <div class="success-copy" id="copyNotification">
+        <i class="fas fa-check-circle"></i>
+        <span>Copied to clipboard!</span>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const imageUrl = document.getElementById('imageUrl');
+            const loadUrlBtn = document.getElementById('loadUrlBtn');
+            const fileInput = document.getElementById('fileInput');
+            const resultsArea = document.getElementById('results');
+            const preview = document.getElementById('preview');
+            const sizeInfo = document.getElementById('sizeInfo');
+            const sizeText = document.getElementById('size');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const copyNotification = document.getElementById('copyNotification');
+            const outputCard = document.getElementById('outputCard');
+            const dropArea = document.getElementById('dropArea');
+            const dragInstructions = document.getElementById('dragInstructions');
+            
+            // Function to show elements that should be hidden when empty
+            const showElements = () => {
+                preview.classList.remove('hide-when-empty');
+                sizeInfo.classList.remove('hide-when-empty');
+                outputCard.classList.remove('hide-when-empty');
+                dragInstructions.classList.add('hidden');
+            };
+            
+            // Function to handle image loading and encoding
+            const processImage = (dataUrl) => {
+                // Display preview
+                preview.src = dataUrl;
+                preview.onload = () => {
+                    showElements();
+                    
+                    // Set result
+                    resultsArea.value = dataUrl;
+                    
+                    // Calculate size
+                    let size = dataUrl.length;
+                    let unit = 'bytes';
+                    
+                    if (size > 1024) {
+                        size = size / 1024;
+                        unit = 'KB';
+                    }
+                    
+                    if (size > 1024) {
+                        size = size / 1024;
+                        unit = 'MB';
+                    }
+                    
+                    sizeText.textContent = `Size: ${size.toFixed(2)} ${unit} (${dataUrl.length.toLocaleString()} bytes)`;
+                };
+            };
+            
+            // Load from URL
+            loadUrlBtn.addEventListener('click', () => {
+                const url = imageUrl.value.trim();
+                if (!url) return;
+                
+                // CORS proxy to handle CORS issues
+                const corsProxy = '';
+                const fetchUrl = url.startsWith('http') ? url : `https://${url}`;
+                
+                fetch(fetchUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => processImage(reader.result);
+                        reader.readAsDataURL(blob);
+                    })
+                    .catch(error => {
+                        alert(`Failed to load image: ${error.message}. This may be due to CORS restrictions.`);
+                    });
+            });
+            
+            // Load from file input
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onloadend = () => processImage(reader.result);
+                reader.readAsDataURL(file);
+            });
+            
+            // Copy to clipboard
+            copyBtn.addEventListener('click', () => {
+                resultsArea.select();
+                document.execCommand('copy');
+                
+                // Modern clipboard API (if available)
+                try {
+                    navigator.clipboard.writeText(resultsArea.value);
+                } catch (err) {
+                    // Fallback already done with execCommand
+                }
+                
+                // Show notification
+                copyNotification.classList.add('show');
+                setTimeout(() => {
+                    copyNotification.classList.remove('show');
+                }, 3000);
+            });
+            
+            // Download as text file
+            downloadBtn.addEventListener('click', () => {
+                const blob = new Blob([resultsArea.value], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'image-base64.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
+            // Drag and drop handling
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.classList.add('drag-over');
+                }, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.classList.remove('drag-over');
+                }, false);
+            });
+            
+            dropArea.addEventListener('drop', (e) => {
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => processImage(reader.result);
+                    reader.readAsDataURL(file);
                 }
             });
-            app.state.loaded = true;
-        },
-        copyLink() {
-            let txt = $("#results").value;
-            $("#results").select();
-            $("#results").setSelectionRange(0, 99999); // For mobile devices
-   
-            navigator.clipboard.writeText(txt);
-
-        },
-        toDataURL: url => fetch(url)
-          .then(response => response.blob())
-          .then(blob => new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.onloadend = () => resolve(reader.result)
-            reader.onerror = reject
-            reader.readAsDataURL(blob)
-          })
-        ),
-        encode() {
-            app.toDataURL($("#imgsrc").value).then(dataUrl => {
-                $("#preview").src = dataUrl;
-                $("#results").value = dataUrl;
-            });
-
-        },
-        encodeImageFileAsURL() {
-            var filesSelected = document.getElementById("inputFileToLoad").files;
-            if (filesSelected.length > 0) {
-              var fileToLoad = filesSelected[0];
-
-              var fileReader = new FileReader();
-
-              fileReader.onload = function(fileLoadedEvent) {
-                var srcData = fileLoadedEvent.target.result; // <--- data: base64
-
-                var newImage = document.createElement('img');
-                newImage.src = srcData;
-
-                document.getElementById("results").value = newImage.src;
-                $("#preview").src = newImage.src;
-                let r = 'KB';
-                let v = (Math.floor((newImage.src.length / 1024) * 10) / 10);
-                if (v > 1000) {
-                    r = 'MB';
-                    v = (Math.floor((v / 1024) * 10) / 10);
+            
+            // Paste image from clipboard - with multiple approaches for cross-browser compatibility
+            document.addEventListener('paste', async (e) => {
+                e.preventDefault();
+                console.log('Paste event detected');
+                
+                // Method 1: Modern approach with clipboardData.items (Chrome, Edge, Firefox, Safari)
+                if (e.clipboardData && e.clipboardData.items) {
+                    const items = e.clipboardData.items;
+                    console.log('Clipboard items found:', items.length);
+                    
+                    for (let i = 0; i < items.length; i++) {
+                        const item = items[i];
+                        console.log('Item type:', item.type);
+                        
+                        if (item.type.indexOf('image') !== -1) {
+                            console.log('Found image in clipboard items');
+                            
+                            try {
+                                const blob = item.getAsFile();
+                                
+                                if (blob) {
+                                    console.log('Got blob from clipboard item, size:', blob.size);
+                                    const reader = new FileReader();
+                                    
+                                    reader.onload = (event) => {
+                                        console.log('FileReader loaded successfully');
+                                        processImage(event.target.result);
+                                    };
+                                    
+                                    reader.onerror = (error) => {
+                                        console.error('FileReader error:', error);
+                                        alert('Error reading image data. Please try another method.');
+                                    };
+                                    
+                                    reader.readAsDataURL(blob);
+                                    return;  // Exit after successful processing
+                                }
+                            } catch (error) {
+                                console.error('Error handling clipboard item:', error);
+                            }
+                        }
+                    }
                 }
-                $("#size").innerHTML = v + r 
-                console.log("Converted Base64 version is " + document.getElementById("results").value);
-              }
-              fileReader.readAsDataURL(fileToLoad);
-            }
-          },
-        fetch: function(url, callback) {
-            fetch(url).then(response=>response.json()).then(data=>{
-                app.data = data;
-                app.state.loaded = true;
-                if (callback && typeof(callback) === "function") {
-                    callback(data);
+                
+                // Method 2: Files API (Some browsers store images in files collection)
+                if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
+                    const files = e.clipboardData.files;
+                    console.log('Clipboard files found:', files.length);
+                    
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        
+                        if (file.type.indexOf('image') !== -1) {
+                            console.log('Found image in clipboard files:', file.type);
+                            
+                            try {
+                                const reader = new FileReader();
+                                
+                                reader.onload = (event) => {
+                                    console.log('FileReader loaded successfully (files method)');
+                                    processImage(event.target.result);
+                                };
+                                
+                                reader.onerror = (error) => {
+                                    console.error('FileReader error (files method):', error);
+                                };
+                                
+                                reader.readAsDataURL(file);
+                                return;  // Exit after successful processing
+                            } catch (error) {
+                                console.error('Error handling clipboard file:', error);
+                            }
+                        }
+                    }
+                }
+                
+                // Method 3: Async Clipboard API (Modern browsers, requires secure context)
+                if (navigator.clipboard && typeof navigator.clipboard.read === 'function') {
+                    try {
+                        console.log('Trying Async Clipboard API');
+                        const clipboardItems = await navigator.clipboard.read();
+                        
+                        for (const clipboardItem of clipboardItems) {
+                            // Get image types available
+                            const imageTypes = clipboardItem.types.filter(type => type.startsWith('image/'));
+                            
+                            if (imageTypes.length > 0) {
+                                console.log('Found image in Async Clipboard API:', imageTypes[0]);
+                                // Get the first available image type
+                                const blob = await clipboardItem.getType(imageTypes[0]);
+                                
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                    console.log('FileReader loaded successfully (async method)');
+                                    processImage(event.target.result);
+                                };
+                                
+                                reader.readAsDataURL(blob);
+                                return;  // Exit after successful processing
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Async Clipboard API error:', error);
+                        // Continue to other methods if this fails
+                    }
+                }
+                
+                console.log('No image found in clipboard or paste functionality not supported');
+            });
+            
+            // Enter key in URL field
+            imageUrl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    loadUrlBtn.click();
                 }
             });
-        },
-        display: function(data, tgt) {
-            let out = "<table><thead><tr>";
-            const keys = Object.keys(data[0]);
-            if (keys) {
-                keys.forEach(key => {
-                    out += `<th>${key}</th>`;
-                });
-            }
-            out += "</tr></thead><tbody>";
-            data.forEach(item=>{
-                out += `<tr>`;
-                keys.forEach(key => {
-                    out += `<td>${item[i]}</td>`;
-                });
-                out += `</tr>`;
-            });
-            out += "</tbody></table>";
-
-            if (tgt) {
-                tgt.innerHTML = out;
-            }
-            return out;
-        }
-    }
-    window.app = app;
-    app.init();
-})();
-</script>
+        });
+    </script>
 </body>
-
 </html>
